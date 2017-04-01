@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select cafe_id,cafe_pw,enabled from cafe_info where cafe_id=?"
+				authorities-by-username-query="select cafe_id, authority from cafe_authorities where cafe_id=?" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<security:http auto-config="true" use-expressions="true">
+		<security:intercept-url pattern="/management/**"
+			access="hasRole('ROLE_USER')" />
+		<security:form-login login-page="/login"
+			authentication-failure-url="/login?error=1"
+			password-parameter="cafe_pw" username-parameter="cafe_id" />
+		<security:access-denied-handler error-page="/login/denied" />
+	</security:http>
+
+
+
+</beans>
